@@ -1,155 +1,447 @@
-{
-  "version": "7.2",
-  "screens": [
-    {
-      "id": "Thrive",
-      "title": "Get help",
-      "data": {
-        "today_iso": { "type": "string", "__example__": "2025-10-24" }
-      },
-      "terminal": true,
-      "success": true,
-      "layout": {
-        "type": "SingleColumnLayout",
-        "children": [
-          {
-            "type": "Form",
-            "name": "form",
-            "children": [
-              {
-                "type": "TextInput",
-                "name": "Name",
-                "label": "Name",
-                "input-type": "text",
-                "required": true
-              },
-              {
-                "type": "RadioButtonsGroup",
-                "label": "Menu",
-                "name": "Menu",
-                "data-source": [
-                  { "id": "registered_parent", "title": "I'm a registered parent" },
-                  { "id": "new_to_thrive", "title": "I'm new to Thrive" }
-                ],
-                "required": true
-              },
-              {
-                "type": "If",
-                "condition": "${form.Menu} == 'registered_parent'",
-                "then": [
-                  {
-                    "type": "RadioButtonsGroup",
-                    "label": "I'm a registered parent — choose one",
-                    "name": "RegisteredParent_Submenu",
-                    "data-source": [
-                      { "id": "rp_know_schedule", "title": "Know your schedule" },
-                      { "id": "rp_reschedule", "title": "Rescheduling" },
-                      { "id": "rp_chat_facilitator", "title": "Chat with your facilitator" }
-                    ],
-                    "required": true
-                  }
-                ]
-              },
-              {
-                "type": "If",
-                "condition": "${form.Menu} == 'new_to_thrive'",
-                "then": [
-                  {
-                    "type": "RadioButtonsGroup",
-                    "label": "I'm new to Thrive — choose one",
-                    "name": "NewToThrive_Submenu",
-                    "data-source": [
-                      { "id": "nt_book_consult", "title": "Book a consult" },
-                      { "id": "nt_schedule_call", "title": "Schedule a call to chat" },
-                      { "id": "nt_know_more", "title": "Know more about Thrive" }
-                    ],
-                    "required": true
-                  }
-                ]
-              },
-              {
-                "type": "If",
-                "condition": "${form.RegisteredParent_Submenu} == 'rp_reschedule'",
-                "then": [
-                  {
-                    "type": "RadioButtonsGroup",
-                    "label": "Reschedule type",
-                    "name": "Reschedule_Mode",
-                    "data-source": [
-                      { "id": "single", "title": "Single date" },
-                      { "id": "range", "title": "Date range" }
-                    ],
-                    "required": true
-                  },
-                  {
-                    "type": "If",
-                    "condition": "${form.Reschedule_Mode} == 'single'",
-                    "then": [
-                      {
-                        "type": "DatePicker",
-                        "name": "Reschedule_Single_Date",
-                        "label": "Select date",
-                        "min-date": "${data.today_iso}",
-                        "required": true
-                      }
-                    ]
-                  },
-                  {
-                    "type": "If",
-                    "condition": "${form.Reschedule_Mode} == 'range'",
-                    "then": [
-                      {
-                        "type": "DatePicker",
-                        "name": "Reschedule_Start_Date",
-                        "label": "Start date",
-                        "min-date": "${data.today_iso}",
-                        "required": true
-                      },
-                      {
-                        "type": "DatePicker",
-                        "name": "Reschedule_End_Date",
-                        "label": "End date",
-                        "min-date": "${data.today_iso}",
-                        "required": true
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "type": "If",
-                "condition": "${form.RegisteredParent_Submenu} == 'rp_chat_facilitator'",
-                "then": [
-                  {
-                    "type": "TextArea",
-                    "name": "Facilitator_Message",
-                    "label": "Message",
-                    "required": true
-                  }
-                ]
-              },
-              {
-                "type": "Footer",
-                "label": "Done",
-                "on-click-action": {
-                  "name": "complete",
-                  "payload": {
-                    "screen_0_Name_0": "${form.Name}",
-                    "screen_0_Menu_1": "${form.Menu}",
-                    "screen_0_RegisteredParent_Submenu_2": "${form.RegisteredParent_Submenu}",
-                    "screen_0_NewToThrive_Submenu_3": "${form.NewToThrive_Submenu}",
-                    "screen_0_Reschedule_Mode_4": "${form.Reschedule_Mode}",
-                    "screen_0_Reschedule_Single_Date_5": "${form.Reschedule_Single_Date}",
-                    "screen_0_Reschedule_Start_Date_6": "${form.Reschedule_Start_Date}",
-                    "screen_0_Reschedule_End_Date_7": "${form.Reschedule_End_Date}",
-                    "screen_0_Facilitator_Message_8": "${form.Facilitator_Message}"
-                  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get help - Thrive</title>
+    <style>
+        :root {
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-brown-600: rgba(94, 82, 64, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-teal-700: rgba(26, 104, 115, 1);
+            --color-brown-600-rgb: 94, 82, 64;
+            --color-teal-500-rgb: 33, 128, 141;
+            --color-slate-900-rgb: 19, 52, 59;
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: var(--color-slate-500);
+            --color-primary: var(--color-teal-500);
+            --color-primary-hover: var(--color-teal-600);
+            --color-primary-active: var(--color-teal-700);
+            --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-btn-primary-text: var(--color-cream-50);
+            --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+            --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-size-sm: 12px;
+            --font-size-base: 14px;
+            --font-size-lg: 16px;
+            --font-size-xl: 18px;
+            --font-size-2xl: 20px;
+            --font-size-3xl: 24px;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --radius-base: 8px;
+            --radius-lg: 12px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-gray-300-rgb: 167, 169, 169;
+                --color-gray-400-rgb: 119, 124, 124;
+                --color-teal-300-rgb: 50, 184, 198;
+                --color-background: var(--color-charcoal-700);
+                --color-surface: var(--color-charcoal-800);
+                --color-text: var(--color-gray-200);
+                --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+                --color-primary: var(--color-teal-300);
+                --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+                --color-btn-primary-text: var(--color-slate-900);
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background-color: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.5;
+            padding: var(--space-24);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-24);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        h1 {
+            font-size: var(--font-size-3xl);
+            margin-bottom: var(--space-24);
+            color: var(--color-text);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-20);
+        }
+
+        label {
+            display: block;
+            margin-bottom: var(--space-8);
+            font-weight: 500;
+            font-size: var(--font-size-base);
+            color: var(--color-text);
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: var(--space-12);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-base);
+            color: var(--color-text);
+            background: var(--color-surface);
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px var(--color-focus-ring);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: var(--font-family-base);
+        }
+
+        input[type="date"] {
+            width: 100%;
+            padding: var(--space-12);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-base);
+            color: var(--color-text);
+            background: var(--color-surface);
+        }
+
+        input[type="date"]:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px var(--color-focus-ring);
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-12);
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: var(--space-12);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .radio-option:hover {
+            background: rgba(var(--color-teal-500-rgb), 0.05);
+        }
+
+        .radio-option input[type="radio"] {
+            margin-right: var(--space-12);
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .radio-option.selected {
+            border-color: var(--color-primary);
+            background: rgba(var(--color-teal-500-rgb), 0.08);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: var(--space-12) var(--space-24);
+            background: var(--color-primary);
+            color: var(--color-btn-primary-text);
+            border: none;
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-lg);
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: var(--space-24);
+        }
+
+        .btn-submit:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .btn-submit:active {
+            background: var(--color-primary-active);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result {
+            margin-top: var(--space-24);
+            padding: var(--space-16);
+            background: rgba(var(--color-teal-500-rgb), 0.08);
+            border: 1px solid var(--color-primary);
+            border-radius: var(--radius-base);
+        }
+
+        .result h2 {
+            font-size: var(--font-size-xl);
+            margin-bottom: var(--space-12);
+            color: var(--color-primary);
+        }
+
+        .result-item {
+            padding: var(--space-8) 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-sm);
+        }
+
+        .result-value {
+            color: var(--color-text);
+            font-size: var(--font-size-base);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Get help</h1>
+        <form id="thriveForm">
+            <div class="form-group">
+                <label for="name">Name *</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Menu *</label>
+                <div class="radio-group" id="menuGroup">
+                    <label class="radio-option">
+                        <input type="radio" name="menu" value="registered_parent" required>
+                        <span>I'm a registered parent</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="menu" value="new_to_thrive">
+                        <span>I'm new to Thrive</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group hidden" id="registeredParentSubmenu">
+                <label>I'm a registered parent — choose one *</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="registeredParentSubmenu" value="rp_know_schedule">
+                        <span>Know your schedule</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="registeredParentSubmenu" value="rp_reschedule">
+                        <span>Rescheduling</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="registeredParentSubmenu" value="rp_chat_facilitator">
+                        <span>Chat with your facilitator</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group hidden" id="newToThriveSubmenu">
+                <label>I'm new to Thrive — choose one *</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="newToThriveSubmenu" value="nt_book_consult">
+                        <span>Book a consult</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="newToThriveSubmenu" value="nt_schedule_call">
+                        <span>Schedule a call to chat</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="newToThriveSubmenu" value="nt_know_more">
+                        <span>Know more about Thrive</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group hidden" id="rescheduleSection">
+                <label>Reschedule type *</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="rescheduleMode" value="single">
+                        <span>Single date</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="rescheduleMode" value="range">
+                        <span>Date range</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group hidden" id="singleDateSection">
+                <label for="singleDate">Select date *</label>
+                <input type="date" id="singleDate" name="singleDate">
+            </div>
+
+            <div class="form-group hidden" id="dateRangeSection">
+                <label for="startDate">Start date *</label>
+                <input type="date" id="startDate" name="startDate">
+                
+                <label for="endDate" style="margin-top: 12px;">End date *</label>
+                <input type="date" id="endDate" name="endDate">
+            </div>
+
+            <div class="form-group hidden" id="facilitatorMessageSection">
+                <label for="facilitatorMessage">Message *</label>
+                <textarea id="facilitatorMessage" name="facilitatorMessage"></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Done</button>
+        </form>
+
+        <div id="result" class="result hidden"></div>
+    </div>
+
+    <script>
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('singleDate').min = today;
+        document.getElementById('startDate').min = today;
+        document.getElementById('endDate').min = today;
+
+        const form = document.getElementById('thriveForm');
+        const menuRadios = document.querySelectorAll('input[name="menu"]');
+        const registeredParentSubmenuRadios = document.querySelectorAll('input[name="registeredParentSubmenu"]');
+        const rescheduleRadios = document.querySelectorAll('input[name="rescheduleMode"]');
+
+        function toggleSections() {
+            const menuValue = document.querySelector('input[name="menu"]:checked')?.value;
+            const registeredParentSubmenu = document.getElementById('registeredParentSubmenu');
+            const newToThriveSubmenu = document.getElementById('newToThriveSubmenu');
+            const rescheduleSection = document.getElementById('rescheduleSection');
+            const singleDateSection = document.getElementById('singleDateSection');
+            const dateRangeSection = document.getElementById('dateRangeSection');
+            const facilitatorMessageSection = document.getElementById('facilitatorMessageSection');
+
+            registeredParentSubmenu.classList.add('hidden');
+            newToThriveSubmenu.classList.add('hidden');
+            rescheduleSection.classList.add('hidden');
+            singleDateSection.classList.add('hidden');
+            dateRangeSection.classList.add('hidden');
+            facilitatorMessageSection.classList.add('hidden');
+
+            if (menuValue === 'registered_parent') {
+                registeredParentSubmenu.classList.remove('hidden');
+                const submenuValue = document.querySelector('input[name="registeredParentSubmenu"]:checked')?.value;
+                
+                if (submenuValue === 'rp_reschedule') {
+                    rescheduleSection.classList.remove('hidden');
+                    const rescheduleMode = document.querySelector('input[name="rescheduleMode"]:checked')?.value;
+                    
+                    if (rescheduleMode === 'single') {
+                        singleDateSection.classList.remove('hidden');
+                    } else if (rescheduleMode === 'range') {
+                        dateRangeSection.classList.remove('hidden');
+                    }
+                } else if (submenuValue === 'rp_chat_facilitator') {
+                    facilitatorMessageSection.classList.remove('hidden');
                 }
-              }
-            ]
-          }
-        ]
-      }
-    }
-  ]
-}
+            } else if (menuValue === 'new_to_thrive') {
+                newToThriveSubmenu.classList.remove('hidden');
+            }
+        }
+
+        menuRadios.forEach(radio => {
+            radio.addEventListener('change', toggleSections);
+        });
+
+        registeredParentSubmenuRadios.forEach(radio => {
+            radio.addEventListener('change', toggleSections);
+        });
+
+        rescheduleRadios.forEach(radio => {
+            radio.addEventListener('change', toggleSections);
+        });
+
+        document.querySelectorAll('.radio-option input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.querySelectorAll(`input[name="${this.name}"]`).forEach(r => {
+                    r.closest('.radio-option').classList.remove('selected');
+                });
+                this.closest('.radio-option').classList.add('selected');
+            });
+        });
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                screen_0_Name_0: document.getElementById('name').value,
+                screen_0_Menu_1: document.querySelector('input[name="menu"]:checked')?.value || '',
+                screen_0_RegisteredParent_Submenu_2: document.querySelector('input[name="registeredParentSubmenu"]:checked')?.value || '',
+                screen_0_NewToThrive_Submenu_3: document.querySelector('input[name="newToThriveSubmenu"]:checked')?.value || '',
+                screen_0_Reschedule_Mode_4: document.querySelector('input[name="rescheduleMode"]:checked')?.value || '',
+                screen_0_Reschedule_Single_Date_5: document.getElementById('singleDate').value || '',
+                screen_0_Reschedule_Start_Date_6: document.getElementById('startDate').value || '',
+                screen_0_Reschedule_End_Date_7: document.getElementById('endDate').value || '',
+                screen_0_Facilitator_Message_8: document.getElementById('facilitatorMessage').value || ''
+            };
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<h2>Form Submitted Successfully!</h2>';
+            
+            for (const [key, value] of Object.entries(formData)) {
+                if (value) {
+                    const label = key.replace(/screen_0_/g, '').replace(/_\d+$/g, '').replace(/_/g, ' ');
+                    resultDiv.innerHTML += `
+                        <div class="result-item">
+                            <div class="result-label">${label}</div>
+                            <div class="result-value">${value}</div>
+                        </div>
+                    `;
+                }
+            }
+            
+            resultDiv.classList.remove('hidden');
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+    </script>
+</body>
+</html>
