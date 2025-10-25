@@ -1,0 +1,155 @@
+{
+  "version": "7.2",
+  "screens": [
+    {
+      "id": "Thrive",
+      "title": "Get help",
+      "data": {
+        "today_iso": { "type": "string", "__example__": "2025-10-24" }
+      },
+      "terminal": true,
+      "success": true,
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "Form",
+            "name": "form",
+            "children": [
+              {
+                "type": "TextInput",
+                "name": "Name",
+                "label": "Name",
+                "input-type": "text",
+                "required": true
+              },
+              {
+                "type": "RadioButtonsGroup",
+                "label": "Menu",
+                "name": "Menu",
+                "data-source": [
+                  { "id": "registered_parent", "title": "I'm a registered parent" },
+                  { "id": "new_to_thrive", "title": "I'm new to Thrive" }
+                ],
+                "required": true
+              },
+              {
+                "type": "If",
+                "condition": "${form.Menu} == 'registered_parent'",
+                "then": [
+                  {
+                    "type": "RadioButtonsGroup",
+                    "label": "I'm a registered parent — choose one",
+                    "name": "RegisteredParent_Submenu",
+                    "data-source": [
+                      { "id": "rp_know_schedule", "title": "Know your schedule" },
+                      { "id": "rp_reschedule", "title": "Rescheduling" },
+                      { "id": "rp_chat_facilitator", "title": "Chat with your facilitator" }
+                    ],
+                    "required": true
+                  }
+                ]
+              },
+              {
+                "type": "If",
+                "condition": "${form.Menu} == 'new_to_thrive'",
+                "then": [
+                  {
+                    "type": "RadioButtonsGroup",
+                    "label": "I'm new to Thrive — choose one",
+                    "name": "NewToThrive_Submenu",
+                    "data-source": [
+                      { "id": "nt_book_consult", "title": "Book a consult" },
+                      { "id": "nt_schedule_call", "title": "Schedule a call to chat" },
+                      { "id": "nt_know_more", "title": "Know more about Thrive" }
+                    ],
+                    "required": true
+                  }
+                ]
+              },
+              {
+                "type": "If",
+                "condition": "${form.RegisteredParent_Submenu} == 'rp_reschedule'",
+                "then": [
+                  {
+                    "type": "RadioButtonsGroup",
+                    "label": "Reschedule type",
+                    "name": "Reschedule_Mode",
+                    "data-source": [
+                      { "id": "single", "title": "Single date" },
+                      { "id": "range", "title": "Date range" }
+                    ],
+                    "required": true
+                  },
+                  {
+                    "type": "If",
+                    "condition": "${form.Reschedule_Mode} == 'single'",
+                    "then": [
+                      {
+                        "type": "DatePicker",
+                        "name": "Reschedule_Single_Date",
+                        "label": "Select date",
+                        "min-date": "${data.today_iso}",
+                        "required": true
+                      }
+                    ]
+                  },
+                  {
+                    "type": "If",
+                    "condition": "${form.Reschedule_Mode} == 'range'",
+                    "then": [
+                      {
+                        "type": "DatePicker",
+                        "name": "Reschedule_Start_Date",
+                        "label": "Start date",
+                        "min-date": "${data.today_iso}",
+                        "required": true
+                      },
+                      {
+                        "type": "DatePicker",
+                        "name": "Reschedule_End_Date",
+                        "label": "End date",
+                        "min-date": "${data.today_iso}",
+                        "required": true
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "If",
+                "condition": "${form.RegisteredParent_Submenu} == 'rp_chat_facilitator'",
+                "then": [
+                  {
+                    "type": "TextArea",
+                    "name": "Facilitator_Message",
+                    "label": "Message",
+                    "required": true
+                  }
+                ]
+              },
+              {
+                "type": "Footer",
+                "label": "Done",
+                "on-click-action": {
+                  "name": "complete",
+                  "payload": {
+                    "screen_0_Name_0": "${form.Name}",
+                    "screen_0_Menu_1": "${form.Menu}",
+                    "screen_0_RegisteredParent_Submenu_2": "${form.RegisteredParent_Submenu}",
+                    "screen_0_NewToThrive_Submenu_3": "${form.NewToThrive_Submenu}",
+                    "screen_0_Reschedule_Mode_4": "${form.Reschedule_Mode}",
+                    "screen_0_Reschedule_Single_Date_5": "${form.Reschedule_Single_Date}",
+                    "screen_0_Reschedule_Start_Date_6": "${form.Reschedule_Start_Date}",
+                    "screen_0_Reschedule_End_Date_7": "${form.Reschedule_End_Date}",
+                    "screen_0_Facilitator_Message_8": "${form.Facilitator_Message}"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
